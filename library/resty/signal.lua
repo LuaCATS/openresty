@@ -1,9 +1,8 @@
 ---@meta
 
 local signal = {
-    version = 0.03,
+	version = 0.03,
 }
-
 
 ---@alias resty.signal.name
 ---| "NONE"   # SIG_NONE
@@ -40,12 +39,10 @@ local signal = {
 ---| "SYS"    # SIG_SYS
 ---| "INFO"   # SIG_INFO
 
-
 ---@alias resty.signal.signal
 ---| resty.signal.name
 ---| integer
 ---| string
-
 
 ---
 -- Sends a signal with its name string or number value to the process of the specified pid.
@@ -61,7 +58,6 @@ local signal = {
 ---@return string? error
 function signal.kill(pid, signal_name_or_num) end
 
-
 ---
 -- Maps the signal name specified to the system-specific signal number.
 -- Returns `nil` if the signal name is not known.
@@ -69,6 +65,5 @@ function signal.kill(pid, signal_name_or_num) end
 ---@param name string|resty.signal.name
 ---@return integer|nil
 function signal.signum(name) end
-
 
 return signal
