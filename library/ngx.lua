@@ -3584,20 +3584,20 @@ ngx.location = {}
 ---
 ---@class ngx.location.capture.options
 ---
----@field method ngx.http.method # the subrequest's request method, which only accepts constants like `ngx.HTTP_POST`.
+---@field method ngx.http.method? # the subrequest's request method, which only accepts constants like `ngx.HTTP_POST`.
 ---
----@field body string # the subrequest's request body (string value only).
+---@field body string? # the subrequest's request body (string value only).
 ---
----@field args string|table # the subrequest's URI query arguments (both string value and Lua tables are accepted)
----@field ctx table # a Lua table to be the `ngx.ctx` table for the subrequest. It can be the current request's `ngx.ctx` table, which effectively makes the parent and its subrequest to share exactly the same context table.
+---@field args (string|table)? # the subrequest's URI query arguments (both string value and Lua tables are accepted)
+---@field ctx table? # a Lua table to be the `ngx.ctx` table for the subrequest. It can be the current request's `ngx.ctx` table, which effectively makes the parent and its subrequest to share exactly the same context table.
 ---
----@field vars table # a Lua table which holds the values to set the specified NGINX variables in the subrequest as this option's value.
+---@field vars table? # a Lua table which holds the values to set the specified NGINX variables in the subrequest as this option's value.
 ---
----@field copy_all_vars boolean # whether to copy over all the NGINX variable values of the current request to the subrequest in question. modifications of the NGINX variables in the subrequest will not affect the current (parent) request.
+---@field copy_all_vars boolean? # whether to copy over all the NGINX variable values of the current request to the subrequest in question. modifications of the NGINX variables in the subrequest will not affect the current (parent) request.
 ---
----@field share_all_vars boolean # whether to share all the NGINX variables of the subrequest with the current (parent) request. modifications of the NGINX variables in the subrequest will affect the current (parent) request. Enabling this option may lead to hard-to-debug issues due to bad side-effects and is considered bad and harmful. Only enable this option when you completely know what you are doing.
+---@field share_all_vars boolean? # whether to share all the NGINX variables of the subrequest with the current (parent) request. modifications of the NGINX variables in the subrequest will affect the current (parent) request. Enabling this option may lead to hard-to-debug issues due to bad side-effects and is considered bad and harmful. Only enable this option when you completely know what you are doing.
 ---
----@field always_forward_body boolean #  when set to true, the current (parent) request's request body will always be forwarded to the subrequest being created if the `body` option is not specified. The request body read by either `ngx.req.read_body()` or `lua_need_request_body on` will be directly forwarded to the subrequest without copying the whole request body data when creating the subrequest (no matter the request body data is buffered in memory buffers or temporary files). By default, this option is `false` and when the `body` option is not specified, the request body of the current (parent) request is only forwarded when the subrequest takes the `PUT` or `POST` request method.
+---@field always_forward_body boolean? #  when set to true, the current (parent) request's request body will always be forwarded to the subrequest being created if the `body` option is not specified. The request body read by either `ngx.req.read_body()` or `lua_need_request_body on` will be directly forwarded to the subrequest without copying the whole request body data when creating the subrequest (no matter the request body data is buffered in memory buffers or temporary files). By default, this option is `false` and when the `body` option is not specified, the request body of the current (parent) request is only forwarded when the subrequest takes the `PUT` or `POST` request method.
 
 ---@alias ngx.location.capture.uri string
 
