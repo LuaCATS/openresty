@@ -410,7 +410,7 @@ function ngx.thread.wait(...) end
 ---
 --- "Light threads" are just a special kind of Lua coroutines that are scheduled by the ngx_lua module.
 ---
---- Before `ngx.thread.spawn` returns, the `func` will be called with those optional arguments until it returns, aborts with an error, or gets yielded due to I/O operations via the NGINX APIs for lua (like `tcpsock:receive`).
+--- Before `ngx.thread.spawn` returns, the `func` will be called with those optional arguments until it returns, aborts with an error, or gets yielded due to I/O operations via the NGINX APIs for lua (like `ngx.socket.tcp:receive`).
 ---
 --- After `ngx.thread.spawn` returns, the newly-created "light thread" will keep running asynchronously usually at various I/O events.
 ---
@@ -2271,7 +2271,7 @@ function ngx.req.get_method() end
 --- You can use the "raw request socket" returned by `ngx.req.socket(true)` to implement fancy protocols like `WebSocket`, or just emit your own raw HTTP response header or body data. You can refer to the `lua-resty-websocket library` for a real world example.
 ---
 ---@param raw? boolean
----@return tcpsock? socket
+---@return ngx.socket.tcp? socket
 ---@return string? error
 function ngx.req.socket(raw) end
 
@@ -2633,7 +2633,7 @@ function ngx.decode_args(str, max_args) end
 
 ngx.socket = {}
 
----@class udpsock
+---@class ngx.socket.udp
 local udpsock = {}
 
 --- Attempts to connect a UDP socket object to a remote server or to a datagram unix domain socket file. Because the datagram protocol is actually connection-less, this method does not really establish a "connection", but only just set the name of the remote peer for subsequent read/write operations.
@@ -2686,7 +2686,7 @@ local udpsock = {}
 ---@param port number
 ---@return boolean ok
 ---@return string? error
----@overload fun(self:udpsock, unix_socket:string):boolean, string?
+---@overload fun(self:ngx.socket.udp, unix_socket:string):boolean, string?
 function udpsock:setpeername(host, port) end
 
 --- Sends data on the current UDP or datagram unix domain socket object.
@@ -2778,10 +2778,10 @@ function udpsock:settimeout(time) end
 ---
 --- The cosocket object here is full-duplex, that is, a reader "light thread" and a writer "light thread" can operate on a single cosocket object simultaneously (both "light threads" must belong to the same Lua handler though, see reasons above). But you cannot have two "light threads" both reading (or writing or connecting) the same cosocket, otherwise you might get an error like "socket busy reading" when calling the methods of the cosocket object.
 ---
----@return tcpsock
+---@return ngx.socket.tcp
 function ngx.socket.tcp() end
 
----@class tcpsock
+---@class ngx.socket.tcp
 local tcpsock = {}
 
 --- Attempts to connect a TCP socket object to a remote server or to a stream unix domain socket file without blocking.
@@ -2844,24 +2844,24 @@ local tcpsock = {}
 ---
 ---@param host string
 ---@param port number
----@param opts? tcpsock.connect.opts
+---@param opts? ngx.socket.tcp.connect.opts
 ---@return boolean ok
 ---@return string? error
----@overload fun(self:tcpsock, unix_socket:string, opts?:tcpsock.connect.opts):boolean, string?
+---@overload fun(self:ngx.socket.tcp, unix_socket:string, opts?:ngx.socket.tcp.connect.opts):boolean, string?
 function tcpsock:connect(host, port, opts) end
 
---- An optional Lua table can be specified as the last argument to `tcpsock:connect()`
+--- An optional Lua table can be specified as the last argument to `ngx.socket.tcp:connect()`
 ---
----@class tcpsock.connect.opts : table
+---@class ngx.socket.tcp.connect.opts : table
 ---
 --- A custom name for the connection pool being used. If omitted, then the connection pool name will be generated from the string template `"<host>:<port>"` or `"<unix-socket-path>"`.
----@field pool string
+---@field pool? string
 ---
 ---	The size of the connection pool. If omitted and no `backlog` option was provided, no pool will be created. If omitted but `backlog` was provided, the pool will be created with a default size equal to the value of the `lua_socket_pool_size` directive. The connection pool holds up to `pool_size` alive connections ready to be reused by subsequent calls to `connect`, but note that there is no upper limit to the total number of opened connections outside of the pool. If you need to restrict the total number of opened connections, specify the `backlog` option. When the connection pool would exceed its size limit, the least recently used (kept-alive) connection already in the pool will be closed to make room for the current connection. Note that the cosocket connection pool is per NGINX worker process rather than per NGINX server instance, so the size limit specified here also applies to every single NGINX worker process. Also note that the size of the connection pool cannot be changed once it has been created.
----@field pool_size number
+---@field pool_size? number
 ---
 --- Limits the total number of opened connections for this pool. No more connections than `pool_size` can be opened for this pool at any time. If the connection pool is full, subsequent connect operations will be queued into a queue equal to this option's value (the "backlog" queue). If the number of queued connect operations is equal to `backlog`, subsequent connect operations will fail and return `nil` plus the error string `"too many waiting connect operations"`. The queued connect operations will be resumed once the number of connections in the pool is less than `pool_size`. The queued connect operation will abort once they have been queued for more than `connect_timeout`, controlled by `settimeouts`, and will return `nil` plus the error string `"timeout"`.
----@field backlog number
+---@field backlog? number
 
 --- Does SSL/TLS handshake on the currently established connection.
 ---
@@ -2908,7 +2908,7 @@ function tcpsock:sslhandshake(reused_session, server_name, ssl_verify, send_stat
 
 --- Set client certificate chain and corresponding private key to the TCP socket object.
 ---
---- The certificate chain and private key provided will be used later by the `tcpsock:sslhandshake` method.
+--- The certificate chain and private key provided will be used later by the `ngx.socket.tcp:sslhandshake` method.
 ---
 --- If both of `cert` and `pkey` are `nil`, this method will clear any existing client certificate and private key that was previously set on the cosocket object
 ---
@@ -2974,7 +2974,7 @@ function tcpsock:send(data) end
 ---
 --- This method does not automatically closes the current connection when the read timeout error happens. For other connection errors, this method always automatically closes the connection.
 ---
----@overload fun(self:tcpsock, size:number):string,string,string
+---@overload fun(self:ngx.socket.tcp, size:number):string,string,string
 ---
 ---@param  pattern? '"*a"'|'"*l"'
 ---@return string? data
@@ -3093,13 +3093,13 @@ function tcpsock:receiveany(max) end
 ---
 --- This method does not automatically closes the current connection when the read timeout error happens. For other connection errors, this method always automatically closes the connection.
 ---
----@alias ngx.socket.tcpsock.iterator fun(size:number|nil):string,string,any
+---@alias ngx.socket.tcp.iterator fun(size:number|nil):string,string,any
 ---
----@overload fun(self:tcpsock, size:number, options:table):ngx.socket.tcpsock.iterator
+---@overload fun(self:ngx.socket.tcp, size:number, options:table):ngx.socket.tcp.iterator
 ---
 ---@param pattern string
 ---@param options? table
----@return ngx.socket.tcpsock.iterator
+---@return ngx.socket.tcp.iterator
 function tcpsock:receiveuntil(pattern, options) end
 
 --- Closes the current TCP or stream unix domain socket. It returns the `1` in case of success and returns `nil` with a string describing the error otherwise.
@@ -3219,13 +3219,13 @@ function tcpsock:settimeouts(connect_timeout, send_timeout, read_timeout) end
 ---  end
 --- ```
 ---
----@param  option  tcpsock.setoption.option
+---@param  option  ngx.socket.tcp.setoption.option
 ---@param  value   number|boolean
 ---@return boolean ok
 ---@return string? error
 function tcpsock:setoption(option, value) end
 
----@alias tcpsock.setoption.option
+---@alias ngx.socket.tcp.setoption.option
 ---| '"keepalive"'   # enable or disable keepalive
 ---| '"reuseaddr"'   # reuse addr options
 ---| '"tcp-nodelay"' # disables the Nagle's algorithm for the connection.
@@ -3280,7 +3280,7 @@ function tcpsock:getreusedtimes() end
 ---
 ---@param host string
 ---@param port? number
----@return tcpsock? socket
+---@return ngx.socket.tcp? socket
 ---@return string? error
 function ngx.socket.connect(host, port) end
 
@@ -3294,7 +3294,7 @@ function ngx.socket.connect(host, port) end
 ---
 --- It is intended to be compatible with the UDP API of the `LuaSocket` library but is 100% nonblocking out of the box.
 ---
----@return udpsock
+---@return ngx.socket.udp
 function ngx.socket.udp() end
 
 --- Just an alias to `ngx.socket.tcp`. If the stream-typed cosocket may also connect to a unix domain
