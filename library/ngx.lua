@@ -3095,12 +3095,18 @@ function tcpsock:receiveany(max) end
 ---
 ---@alias ngx.socket.tcp.iterator fun(size:number|nil):string,string,any
 ---
----@overload fun(self:ngx.socket.tcp, size:number, options:table):ngx.socket.tcp.iterator
+---@overload fun(self:ngx.socket.tcp, size:number, options:ngx.socket.tcp.receiveuntil.opts|nil):ngx.socket.tcp.iterator
 ---
 ---@param pattern string
----@param options? table
+---@param options? ngx.socket.tcp.receiveuntil.opts
 ---@return ngx.socket.tcp.iterator
 function tcpsock:receiveuntil(pattern, options) end
+
+
+---@class ngx.socket.tcp.receiveuntil.opts
+---
+---@field inclusive? boolean # takes a boolean value to control whether to include the pattern string in the returned data string. Default to `false`.
+
 
 --- Closes the current TCP or stream unix domain socket. It returns the `1` in case of success and returns `nil` with a string describing the error otherwise.
 ---
