@@ -3102,11 +3102,9 @@ function tcpsock:receiveany(max) end
 ---@return ngx.socket.tcp.iterator
 function tcpsock:receiveuntil(pattern, options) end
 
-
 ---@class ngx.socket.tcp.receiveuntil.opts
 ---
 ---@field inclusive? boolean # takes a boolean value to control whether to include the pattern string in the returned data string. Default to `false`.
-
 
 --- Closes the current TCP or stream unix domain socket. It returns the `1` in case of success and returns `nil` with a string describing the error otherwise.
 ---
