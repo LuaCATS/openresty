@@ -3,7 +3,12 @@
 ---@class resty.websocket.client : resty.websocket
 ---
 ---@field _VERSION string
+---
+---@field send_unmasked boolean
 local client = {}
+
+---@class resty.websocket.client.new.opts : resty.websocket.new.opts
+---@field send_unmasked? boolean # send unmasked WebSocket frames. Default: `false`.
 
 ---Instantiates a WebSocket client object.
 ---
@@ -11,7 +16,7 @@ local client = {}
 ---
 ---An optional options table can be specified.
 ---
----@param  opts?                   resty.websocket.new.opts
+---@param  opts?                   resty.websocket.client.new.opts
 ---@return resty.websocket.client? client
 ---@return string?                 error
 function client:new(opts) end
