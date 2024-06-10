@@ -1,11 +1,12 @@
 ---@meta
 
 ---@class ngx.semaphore
+---
+---@field version string
+---
 --- sem is the internal c handler
 ---@field sem userdata
-local semaphore = {
-	version = require("resty.core.base").version,
-}
+local semaphore = {}
 
 ---Creates and returns a new semaphore instance.
 ---
@@ -47,7 +48,7 @@ function semaphore:count() end
 ---
 ---@param  timeout? number
 ---@return boolean  ok
----@return string|"timeout"  error
+---@return string|"timeout"?  error
 function semaphore:wait(timeout) end
 
 --- Releases n (default to 1) "resources" to the semaphore instance.

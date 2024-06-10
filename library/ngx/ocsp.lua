@@ -1,7 +1,9 @@
 ---@meta
-local ocsp = {
-	version = require("resty.core.base").version,
-}
+
+---@class ngx.ocsp
+---
+---@field version string
+local ocsp = {}
 
 --- Extracts the OCSP responder URL (like "http://test.com/ocsp/") from the SSL server certificate chain in the DER format.
 ---

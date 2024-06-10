@@ -1,7 +1,9 @@
 ---@meta
-local re = {}
 
-re.version = require("resty.core.base").version
+---@class ngx.re
+---
+---@field version string
+local re = {}
 
 --- Allows changing of regex settings. Currently, it can only change the `jit_stack_size` of the PCRE engine, like so:
 ---
