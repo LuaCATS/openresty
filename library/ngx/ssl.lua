@@ -1,5 +1,35 @@
 ---@meta
+
+---@class ngx.ssl
+---
+---@field version string
+---
+---@field SSL3_VERSION   ngx.ssl.SSL3_VERSION
+---@field TLS1_VERSION   ngx.ssl.TLS1_VERSION
+---@field TLS1_1_VERSION ngx.ssl.TLS1_1_VERSION
+---@field TLS1_2_VERSION ngx.ssl.TLS1_2_VERSION
+---@field TLS1_3_VERSION ngx.ssl.TLS1_3_VERSION
 local ssl = {}
+
+---@alias ngx.ssl.SSL3_VERSION   768
+---@alias ngx.ssl.TLS1_VERSION   769
+---@alias ngx.ssl.TLS1_1_VERSION 770
+---@alias ngx.ssl.TLS1_2_VERSION 771
+---@alias ngx.ssl.TLS1_3_VERSION 772
+
+---@alias ngx.ssl.tls_version.integer
+---| ngx.ssl.SSL3_VERSION
+---| ngx.ssl.TLS1_VERSION
+---| ngx.ssl.TLS1_1_VERSION
+---| ngx.ssl.TLS1_2_VERSION
+---| ngx.ssl.TLS1_3_VERSION
+
+---@alias ngx.ssl.tls_version.string
+---| "SSLv3"
+---| "TLSv1"
+---| "TLSv1.1"
+---| "TLSv1.2"
+---| "TLSv1.3"
 
 --- Sets the DER-formatted prviate key for the current SSL connection.
 ---
@@ -29,14 +59,14 @@ function ssl.parse_pem_priv_key(pem_priv_key) end
 ---
 --- Typical return values are:
 ---
----     0x0300(SSLv3)
----     0x0301(TLSv1)
----     0x0302(TLSv1.1)
----     0x0303(TLSv1.2)
----     0x0304(TLSv1.3)
+---     0x0300 (768) SSLv3
+---     0x0301 (769) TLSv1
+---     0x0302 (770) TLSv1.1
+---     0x0303 (771) TLSv1.2
+---     0x0304 (772) TLSv1.3
 ---
 --- This function can be called in any context where downstream https is used.
----@return number? version
+---@return ngx.ssl.tls_version.integer? version
 ---@return string? error
 function ssl.get_tls1_version() end
 
@@ -51,7 +81,6 @@ function ssl.get_tls1_version() end
 ---@return string? error
 function ssl.set_cert(cert_chain) end
 
-ssl.TLS1_VERSION = 769
 
 --- Sets the SSL private key opaque pointer returned by the parse_pem_priv_key function for the current SSL connection.
 ---
@@ -173,9 +202,6 @@ function ssl.raw_client_addr() end
 ---@return string? error
 function ssl.parse_pem_cert(pem_cert_chain) end
 
-ssl.version = require("resty.core.base").version
-ssl.TLS1_2_VERSION = 771
-
 --- Returns the TLS SNI (Server Name Indication) name set by the client. Returns nil when the client does not set it.
 ---
 --- In case of failures, it returns nil and a string describing the error.
@@ -199,9 +225,6 @@ function ssl.server_name() end
 ---@return number? server_port
 ---@return string? error
 function ssl.server_port() end
-
-ssl.TLS1_1_VERSION = 770
-ssl.SSL3_VERSION = 768
 
 --- Sets the DER-formatted SSL certificate chain data for the current SSL connection. Note that the DER data is directly in the Lua string argument. No external file names are supported here.
 ---
@@ -227,7 +250,7 @@ function ssl.set_der_cert(der_cert_chain) end
 ---
 --- This function can be called in any context where downstream https is used.
 ---
----@return string? version
+---@return ngx.ssl.tls_version.string? version
 ---@return string? error
 function ssl.get_tls1_version_str() end
 
