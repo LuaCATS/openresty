@@ -1,6 +1,5 @@
 ---@meta
 
----
 --- lua-resty-dns - Lua DNS resolver for the ngx_lua based on the cosocket API
 ---
 --- https://github.com/openresty/lua-resty-dns
@@ -38,109 +37,99 @@
 ---@class resty.dns.resolver
 ---@field _VERSION string
 ---
---- undocumented/private fields--use at your own risk
----
 ---@field cur         integer
----@field socks       udpsock[]
----@field tcp_sock    tcpsock
+---@field socks       ngx.socket.udp[]
+---@field tcp_sock    ngx.socket.tcp
 ---@field servers     resty.dns.resolver.nameserver_tuple[]
 ---@field retrans     integer
 ---@field no_recurse  boolean
+---
+---@field TYPE_A      resty.dns.resolver.TYPE_A
+---@field TYPE_NS     resty.dns.resolver.TYPE_NS
+---@field TYPE_CNAME  resty.dns.resolver.TYPE_CNAME
+---@field TYPE_SOA    resty.dns.resolver.TYPE_SOA
+---@field TYPE_PTR    resty.dns.resolver.TYPE_PTR
+---@field TYPE_MX     resty.dns.resolver.TYPE_MX
+---@field TYPE_TXT    resty.dns.resolver.TYPE_TXT
+---@field TYPE_AAAA   resty.dns.resolver.TYPE_AAAA
+---@field TYPE_SRV    resty.dns.resolver.TYPE_SRV
+---@field TYPE_SPF    resty.dns.resolver.TYPE_SPF
+---
+---@field CLASS_IN    resty.dns.resolver.CLASS_IN
+---
+---@field SECTION_AN  resty.dns.resolver.SECTION_AN
+---@field SECTION_NS  resty.dns.resolver.SECTION_NS
+---@field SECTION_AR  resty.dns.resolver.SECTION_AR
 local resolver = {}
 
 --- The `A` resource record type, equal to the decimal number 1.
----@class resty.dns.resolver.TYPE_A
-resolver.TYPE_A = 1
+---@alias resty.dns.resolver.TYPE_A 1
 
 --- The `NS` resource record type, equal to the decimal number `2`.
----@class resty.dns.resolver.TYPE_NS
-resolver.TYPE_NS = 2
+---@alias resty.dns.resolver.TYPE_NS 2
 
 --- The `CNAME` resource record type, equal to the decimal number `5`.
----@class resty.dns.resolver.TYPE_CNAME
-resolver.TYPE_CNAME = 5
+---@alias resty.dns.resolver.TYPE_CNAME 5
 
 --- The `SOA` resource record type, equal to the decimal number `6`.
----@class resty.dns.resolver.TYPE_SOA
-resolver.TYPE_SOA = 6
+---@alias resty.dns.resolver.TYPE_SOA 6
 
 --- The `PTR` resource record type, equal to the decimal number `12`.
----@class resty.dns.resolver.TYPE_PTR
-resolver.TYPE_PTR = 12
+---@alias resty.dns.resolver.TYPE_PTR 12
 
 --- The `MX` resource record type, equal to the decimal number `15`.
----@class resty.dns.resolver.TYPE_MX
-resolver.TYPE_MX = 15
+---@alias resty.dns.resolver.TYPE_MX 15
 
 --- The `TXT` resource record type, equal to the decimal number `16`.
----@class resty.dns.resolver.TYPE_TXT
-resolver.TYPE_TXT = 16
+---@alias resty.dns.resolver.TYPE_TXT 16
 
 --- The `AAAA` resource record type, equal to the decimal number `28`.
----@class resty.dns.resolver.TYPE_AAAA
-resolver.TYPE_AAAA = 28
+---@alias resty.dns.resolver.TYPE_AAAA 28
 
 --- The `SRV` resource record type, equal to the decimal number `33`.
 ---
 --- See RFC 2782 for details.
----@class resty.dns.resolver.TYPE_SRV
-resolver.TYPE_SRV = 33
+---@alias resty.dns.resolver.TYPE_SRV 33
 
 --- The `SPF` resource record type, equal to the decimal number `99`.
 ---
 --- See RFC 4408 for details.
----@class resty.dns.resolver.TYPE_SPF
-resolver.TYPE_SPF = 99
+---@alias resty.dns.resolver.TYPE_SPF 99
 
----@alias resty.dns.resolver.TYPE integer
----| `resolver.TYPE_A`     # A
----| 1                     # A
----| `resolver.TYPE_NS`    # NS
----| 2                     # NS
----| `resolver.TYPE_CNAME` # CNAME
----| 5                     # CNAME
----| `resolver.TYPE_SOA`   # SOA
----| 6                     # SOA
----| `resolver.TYPE_PTR`   # PTR
----| 12                    # PTR
----| `resolver.TYPE_MX`    # MX
----| 15                    # MX
----| `resolver.TYPE_TXT`   # TXT
----| 16                    # TXT
----| `resolver.TYPE_AAAA`  # AAAA
----| 28                    # AAAA
----| `resolver.TYPE_SRV`   # SRV
----| 33                    # SRV
----| `resolver.TYPE_SPF`   # SPF
----| 99                    # SPF
+---@alias resty.dns.resolver.TYPE
+---| integer
+---| resty.dns.resolver.TYPE_A     # A
+---| resty.dns.resolver.TYPE_NS    # NS
+---| resty.dns.resolver.TYPE_CNAME # CNAME
+---| resty.dns.resolver.TYPE_SOA   # SOA
+---| resty.dns.resolver.TYPE_PTR   # PTR
+---| resty.dns.resolver.TYPE_MX    # MX
+---| resty.dns.resolver.TYPE_TXT   # TXT
+---| resty.dns.resolver.TYPE_AAAA  # AAAA
+---| resty.dns.resolver.TYPE_SRV   # SRV
+---| resty.dns.resolver.TYPE_SPF   # SPF
 
----@alias resty.dns.resolver.CLASS integer
----| `resolver.CLASS_IN`
----| 1
+---@alias resty.dns.resolver.CLASS
+---| integer
+---| resty.dns.resolver.CLASS_IN # IN
 
 --- The `Internet` resource record type
----@class resty.dns.resolver.CLASS_IN
-resolver.CLASS_IN = 1
+---@alias resty.dns.resolver.CLASS_IN 1
 
----@alias resty.dns.resolver.SECTION integer
----| `resolver.SECTION_AN` # Answer section
----| 1                     # Answer section
----| `resolver.SECTION_NS` # Authority section
----| 2                     # Authority section
----| `resolver.SECTION_AR` # Additional section
----| 3                     # Additional section
+---@alias resty.dns.resolver.SECTION
+---| integer
+---| resty.dns.resolver.SECTION_AN # Answer section
+---| resty.dns.resolver.SECTION_NS # Authority section
+---| resty.dns.resolver.SECTION_AR # Additional section
 
 --- Identifier of the `Answer` section in the DNS response.
----@class resty.dns.resolver.SECTION_AN
-resolver.SECTION_AN = 1
+---@alias resty.dns.resolver.SECTION_AN 1
 
 --- Identifier of the `Authority` section in the DNS response.
----@class resty.dns.resolver.SECTION_NS
-resolver.SECTION_NS = 2
+---@alias resty.dns.resolver.SECTION_NS 2
 
 --- Identifier of the `Additional` section in the DNS response.
----@class resty.dns.resolver.SECTION_AR
-resolver.SECTION_AR = 3
+---@alias resty.dns.resolver.SECTION_AR 3
 
 ---@alias resty.dns.resolver.ERRCODE integer
 ---| 1  # format error
@@ -166,9 +155,7 @@ resolver.SECTION_AR = 3
 ---@return string? error
 function resolver:new(opts) end
 
----@class resty.dns.resolver.nameserver_tuple
----@field [1] string  # hostname or addr
----@field [2] integer # port number
+---@alias resty.dns.resolver.nameserver_tuple [string, integer]
 
 ---@alias resty.dns.resolver.nameserver
 ---| string
@@ -232,23 +219,28 @@ function resolver:query(qname, opts, tries) end
 ---
 ---@class resty.dns.resolver.answer.A : resty.dns.resolver.answer
 ---
+---@field type resty.dns.resolver.TYPE_A
 ---@field address string # The IPv4 address.
 
 --- AAAA-type answer
 ---
 ---@class resty.dns.resolver.answer.AAAA : resty.dns.resolver.answer
 ---
+---@field type resty.dns.resolver.TYPE_AAAA
 ---@field address string # The IPv6 address. Successive 16-bit zero groups in IPv6 addresses will not be compressed by default, if you want that, you need to call the compress_ipv6_addr static method instead.
 
 --- CNAME-type answer
 ---
 ---@class resty.dns.resolver.answer.CNAME : resty.dns.resolver.answer
 ---
+---@field type resty.dns.resolver.TYPE_CNAME
 ---@field cname? string # The (decoded) record data value for CNAME resource records.
 
 --- MX-type answer
 ---
 ---@class resty.dns.resolver.answer.MX : resty.dns.resolver.answer
+---
+---@field type resty.dns.resolver.TYPE_MX
 ---
 ---@field preference integer # The preference integer number for MX resource records.
 ---
@@ -257,6 +249,8 @@ function resolver:query(qname, opts, tries) end
 --- SRV-type answer
 ---
 ---@class resty.dns.resolver.answer.SRV : resty.dns.resolver.answer
+---
+---@field type resty.dns.resolver.TYPE_SRV
 ---
 ---@field priority number
 ---
@@ -270,6 +264,8 @@ function resolver:query(qname, opts, tries) end
 ---
 ---@class resty.dns.resolver.answer.NS : resty.dns.resolver.answer
 ---
+---@field type resty.dns.resolver.TYPE_NS
+---
 ---@field nsdname string # A domain-name which specifies a host which should be authoritative for the specified class and domain. Usually present for NS type records.
 ---
 
@@ -277,11 +273,15 @@ function resolver:query(qname, opts, tries) end
 ---
 ---@class resty.dns.resolver.answer.TXT : resty.dns.resolver.answer
 ---
+---@field type resty.dns.resolver.TYPE_TXT
+---
 ---@field txt? string|string[] # The record value for TXT records. When there is only one character string in this record, then this field takes a single Lua string. Otherwise this field takes a Lua table holding all the strings.
 
 --- SPF-type answer
 ---
 ---@class resty.dns.resolver.answer.SPF : resty.dns.resolver.answer
+---
+---@field type resty.dns.resolver.TYPE_SPF
 ---
 ---@field spf? string|string[] # The record value for SPF records. When there is only one character string in this record, then this field takes a single Lua string. Otherwise this field takes a Lua table holding all the strings.
 
@@ -289,11 +289,15 @@ function resolver:query(qname, opts, tries) end
 ---
 ---@class resty.dns.resolver.answer.PTR : resty.dns.resolver.answer
 ---
+---@field type resty.dns.resolver.TYPE_PTR
+---
 ---@field ptrdname string # The record value for PTR records.
 
 --- SOA-type answer
 ---
 ---@class resty.dns.resolver.answer.SOA : resty.dns.resolver.answer
+---
+---@field type resty.dns.resolver.TYPE_SOA
 ---
 ---@field serial   integer # SOA serial
 ---@field refresh  integer # SOA refresh
