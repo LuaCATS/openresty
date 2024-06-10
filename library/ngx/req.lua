@@ -1,7 +1,9 @@
 ---@meta
-local req = {}
 
-req.version = require("resty.core.base").version
+---@class ngx.req
+---
+---@field version string
+local req = {}
 
 ---This method adds the specified header and its value to the current request. It works similarly as ngx.req.set_header, with the exception that when the header already exists, the specified value(s) will be appended instead of overriden.
 ---

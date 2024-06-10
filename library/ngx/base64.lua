@@ -1,7 +1,9 @@
 ---@meta
-local base64 = {
-	version = require("resty.core.base").version,
-}
+
+---@class ngx.base64
+---
+---@field version string
+local base64 = {}
 
 ---Encode input using base64url rules. Returns the encoded string.
 ---@param s string

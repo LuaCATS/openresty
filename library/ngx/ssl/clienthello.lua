@@ -1,7 +1,9 @@
 ---@meta
-local clienthello = {}
 
-clienthello.version = require("resty.core.base").version
+---@class ngx.ssl.clienthello
+---
+---@field version string
+local clienthello = {}
 
 ---Returns the TLS SNI (Server Name Indication) name set by the client.
 ---

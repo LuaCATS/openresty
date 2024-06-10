@@ -1,7 +1,9 @@
 ---@meta
-local balancer = {
-	version = require("resty.core.base").version,
-}
+
+---@class ngx.balancer
+---
+---@field version string
+local balancer = {}
 
 --- Sets the peer address (host and port) for the current backend query (which
 --- may be a retry).

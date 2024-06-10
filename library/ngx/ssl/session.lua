@@ -1,7 +1,9 @@
 ---@meta
-local session = {}
 
-session.version = require("resty.core.base").version
+---@class ngx.ssl.session
+---
+---@field version string
+local session = {}
 
 --- Sets the serialized SSL session provided as the argument to the current SSL connection.
 --- If the SSL session is successfully set, the current SSL connection can resume the session

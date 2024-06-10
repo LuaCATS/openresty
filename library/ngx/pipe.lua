@@ -1,8 +1,9 @@
 ---@meta
-local pipe = {}
-pipe._gc_ref_c_opt = "-c"
 
-pipe.version = require("resty.core.base").version
+---@class ngx.pipe
+---
+---@field version string
+local pipe = {}
 
 --- Creates and returns a new sub-process instance we can communicate with later.
 ---

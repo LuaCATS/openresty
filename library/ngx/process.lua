@@ -1,7 +1,9 @@
 ---@meta
-local process = {
-	version = require("resty.core.base").version,
-}
+
+---@class ngx.process
+---
+---@field version string
+local process = {}
 
 --- Returns a number value for the nginx master process's process ID (or PID).
 ---

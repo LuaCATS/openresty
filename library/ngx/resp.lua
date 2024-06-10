@@ -1,7 +1,9 @@
 ---@meta
-local resp = {}
 
-resp.version = require("resty.core.base").version
+---@class ngx.resp
+---
+---@field version string
+local resp = {}
 
 --- This function adds specified header with corresponding value to the response of current request.
 ---
