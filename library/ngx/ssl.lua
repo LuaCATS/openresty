@@ -55,6 +55,16 @@ function ssl.set_der_priv_key(der_priv_key) end
 ---@return string? error
 function ssl.parse_pem_priv_key(pem_priv_key) end
 
+--- Converts the DER-formatted SSL private key data into an opaque cdata pointer (for later uses in the `set_priv_key()` function, for example).
+---
+--- In case of failures, returns `nil` and a string describing the error.
+---
+--- This function can be called in any context.
+---@param der_priv_key string
+---@return ffi.cdata*? priv_key
+---@return string? error
+function ssl.parse_der_priv_key(der_priv_key) end
+
 --- Returns the TLS 1.x version number used by the current SSL connection. Returns nil and a string describing the error otherwise.
 ---
 --- Typical return values are:
@@ -70,7 +80,7 @@ function ssl.parse_pem_priv_key(pem_priv_key) end
 ---@return string? error
 function ssl.get_tls1_version() end
 
---- Sets the SSL certificate chain opaque pointer returned by the parse_pem_cert function for the current SSL connection.
+--- Sets the SSL certificate chain opaque pointer returned by the `parse_pem_cert()` or `parse_der_cert()` functions for the current SSL connection.
 ---
 --- Returns true on success, or a nil value and a string describing the error otherwise.
 ---
@@ -81,8 +91,7 @@ function ssl.get_tls1_version() end
 ---@return string? error
 function ssl.set_cert(cert_chain) end
 
-
---- Sets the SSL private key opaque pointer returned by the parse_pem_priv_key function for the current SSL connection.
+--- Sets the SSL private key opaque pointer returned by the `parse_pem_priv_key()` or `parse_der_priv_key()` functions for the current SSL connection.
 ---
 --- Returns true on success, or a nil value and a string describing the error otherwise.
 ---
@@ -201,6 +210,18 @@ function ssl.raw_client_addr() end
 ---@return ffi.cdata*? cert_chain
 ---@return string? error
 function ssl.parse_pem_cert(pem_cert_chain) end
+
+--- Converts the DER-formated SSL certificate chain data into an opaque cdata pointer (for later usese in the `set_cert()` function, for example).
+---
+--- In case of failures, returns `nil` and a string describing the error.
+---
+--- You can always use libraries like [lua-resty-lrucache](https://github.com/openresty/lua-resty-lrucache#readme) to cache the cdata result.
+---
+--- This function can be called in any context.
+---@param der_cert_chain string
+---@return ffi.cdata*? cert_chain
+---@return string? error
+function ssl.parse_der_cert(der_cert_chain) end
 
 --- Returns the TLS SNI (Server Name Indication) name set by the client. Returns nil when the client does not set it.
 ---
