@@ -352,6 +352,9 @@ function resolver:reverse_query(addr) end
 ---@param timeout number # timeout in milliseconds
 function resolver:set_timeout(timeout) end
 
+--- Destroy the resolver object by releasing all the internal occupied resources.
+function resolver:destroy() end
+
 --- Compresses the successive 16-bit zero groups in the textual format of the IPv6 address.
 ---
 --- For example, the following will yield `FF01::101` in the new_addr return value:
