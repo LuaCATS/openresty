@@ -1,6 +1,8 @@
 ---@meta
 
 ---@class resty.core.regex
+---
+---@field version string
 ---@field no_pcre boolean
 local regex = {}
 

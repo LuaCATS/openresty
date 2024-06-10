@@ -1,4 +1,8 @@
 ---@meta
-local resty_core_worker = {}
-resty_core_worker._VERSION = require("resty.core.base").version
-return resty_core_worker
+
+---@class resty.core.worker
+---
+---@field version string
+local worker = {}
+
+return worker
