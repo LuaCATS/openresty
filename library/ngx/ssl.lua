@@ -352,4 +352,17 @@ function ssl.export_keying_material(length, label, context) end
 ---@return string?  error
 function ssl.export_keying_material_early(length, label, context) end
 
+--- Returns the random value sent from the client to the server during the initial SSL/TLS handshake.
+---
+--- The `outlen` parameter indicates the maximum length of the client_random value returned.
+--- If the `outlen` is zero, this function returns the total length of the client_random value.
+--- If omitted, will use the value 32.
+---
+--- This function can be called in any context where downstream https is used, but in the context of [ssl_client_hello_by_lua*](https://github.com/openresty/lua-nginx-module/#ssl_client_hello_by_lua_block), it can not return the real client_random value, just a string filled with 0.
+---
+---@param  outlen?         integer
+---@return string|integer? result
+---@return string?         error
+function ssl.get_client_random(outlen) end
+
 return ssl
