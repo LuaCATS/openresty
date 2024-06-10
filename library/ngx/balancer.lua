@@ -114,4 +114,16 @@ function balancer.set_more_tries(count) end
 ---@return string? error
 function balancer.recreate_request() end
 
+--- Turn off the HTTPs or reenable the HTTPs for the upstream connection.
+---
+--- - If `on` is `true`, then the https protocol will be used to connect to the upstream server.
+--- - If `on` is `false`, then the http protocol will be used to connect to the upstream server.
+---
+--- This function was first added in the `0.1.29` version of this library.
+---
+---@param on boolean
+---@return boolean? ok
+---@return string? error
+function balancer.set_upstream_tls(on) end
+
 return balancer
