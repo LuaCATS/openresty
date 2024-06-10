@@ -60,15 +60,17 @@ local aes_ctx = {}
 ---
 ---@param  s       string
 ---@param  tag?    string
+---@param  aad?    string # Additional Authenticated Data
 ---@return string? decrypted
 ---@return string? error
-function aes_ctx:decrypt(s, tag) end
+function aes_ctx:decrypt(s, tag, aad) end
 
 --- Encrypt a string.
 ---
 ---@param  s       string
+---@param  aad?    string # Additional Authenticated Data
 ---@return string? encrypted
 ---@return string? error
-function aes_ctx:encrypt(s) end
+function aes_ctx:encrypt(s, aad) end
 
 return aes
