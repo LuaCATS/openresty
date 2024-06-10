@@ -286,4 +286,70 @@ function ssl.verify_client(ca_certs, depth) end
 ---@return string?     error
 function ssl.get_req_ssl_pointer() end
 
+--- Return a key derived from the SSL master secret.
+---
+--- As described in RFC8446 section 7.5 this function returns key material that is derived from the SSL master secret and can be used on the application level. The returned key material is of the given length. Label is mandatory and requires a special format that is described in RFC5705 section 4. Context is optional but note that in TLSv1.2 and below a zero length context is treated differently from no context at all, and will result in different keying material being returned. In TLSv1.3 a zero length context is that same as no context at all and will result in the same keying material being returned.
+---
+--- The following code snippet shows how to derive a new key that can be used on the application level.
+---
+--- ```lua
+--- local ssl = require "ngx.ssl"
+---
+--- local key_length = 16
+--- local label = "EXPERIMENTAL my label"
+--- local context = "\x00\x01\x02\x03"
+---
+--- local key, err = ssl.export_keying_material(key_length, label, context)
+--- if not key then
+---     ngx.log(ngx.ERR, "failed to derive key ", err)
+---     return
+--- end
+---
+--- -- use key...
+---
+--- end
+--- ```
+---
+--- This function can be called in any context where downstream https is used.
+---
+---@param  length   integer
+---@param  label    string
+---@param  context? string
+---@return string?  key
+---@return string?  error
+function ssl.export_keying_material(length, label, context) end
+
+--- Returns a key derived from the SSL early exporter master secret.
+---
+--- As described in RFC8446 section 7.5 this function returns key material that is derived from the SSL early exporter master secret and can be used on the application level. The returned key material is of the given length. Label is mandatory and requires a special format that is described in RFC5705 section 4. This function is only usable with TLSv1.3, and derives keying material using the early_exporter_master_secret (as defined in the TLS 1.3 RFC). For the client, the early_exporter_master_secret is only available when the client attempts to send 0-RTT data. For the server, it is only available when the server accepts 0-RTT data.
+---
+--- The following code snippet shows how to derive a new key that can be used on the application level.
+---
+--- ```lua
+--- local ssl = require "ngx.ssl"
+---
+--- local key_length = 16
+--- local label = "EXPERIMENTAL my label"
+--- local context = "\x00\x01\x02\x03"
+---
+--- local key, err = ssl.export_keying_material_early(key_length, label, context)
+--- if not key then
+---     ngx.log(ngx.ERR, "failed to derive key ", err)
+---     return
+--- end
+---
+--- -- use key...
+---
+--- end
+--- ```
+---
+--- This function can be called in any context where downstream https TLS1.3 is used.
+---
+---@param  length   integer
+---@param  label    string
+---@param  context? string
+---@return string?  key
+---@return string?  error
+function ssl.export_keying_material_early(length, label, context) end
+
 return ssl
