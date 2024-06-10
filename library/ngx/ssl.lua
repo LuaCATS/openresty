@@ -273,4 +273,17 @@ function ssl.cert_pem_to_der(pem_cert_chain) end
 ---@return string? error
 function ssl.verify_client(ca_certs, depth) end
 
+--- Retrieves the OpenSSL `SSL*` object for the current downstream connection.
+---
+--- Returns an FFI pointer on success, or a `nil` value and a string describing the error otherwise.
+---
+--- If you need to retain the pointer beyond the current phase then you will need to use OpenSSL's `SSL_up_ref` to increase the reference count.
+--- If you do, ensure that your reference is released with `SSL_free`.
+---
+--- This function was first added in version `0.1.16`.
+---
+---@return ffi.cdata*? pointer
+---@return string?     error
+function ssl.get_req_ssl_pointer() end
+
 return ssl
