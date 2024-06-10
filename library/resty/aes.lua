@@ -3,14 +3,14 @@
 local aes = {}
 
 ---@alias resty.aes.cipher.name
----| '"ecb"'
----| '"cbc"'
----| '"cfb1"'
----| '"cfb128"'
----| '"cfb8"'
----| '"ctr"
----| '"gcm"'
----| '"ofb"'
+---| "ecb"
+---| "cbc"
+---| "cfb1"
+---| "cfb128"
+---| "cfb8"
+---| "ctr"
+---| "gcm"
+---| "ofb"
 
 ---@alias resty.aes.cipher.size '128'|'192'|'256'
 

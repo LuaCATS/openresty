@@ -107,9 +107,9 @@ function ssl.set_priv_key(priv_key) end
 function ssl.raw_server_addr() end
 
 ---@alias ngx.ssl.addr_type
----| '"unix"'  # a file path for the UNIX domain socket.
----| '"inet"'  # a binary IPv4 address of 4 bytes long.
----| '"inet6"' # a binary IPv6 address of 16 bytes long.
+---| "unix"  # a file path for the UNIX domain socket.
+---| "inet"  # a binary IPv4 address of 4 bytes long.
+---| "inet6" # a binary IPv6 address of 16 bytes long.
 
 --- Clears any existing SSL certificates and/or private keys set on the current SSL connection.
 ---

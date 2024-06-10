@@ -47,7 +47,7 @@ function semaphore:count() end
 ---
 ---@param  timeout? number
 ---@return boolean  ok
----@return string|'"timeout"'  error
+---@return string|"timeout"  error
 function semaphore:wait(timeout) end
 
 --- Releases n (default to 1) "resources" to the semaphore instance.
