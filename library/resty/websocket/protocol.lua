@@ -1,9 +1,9 @@
 ---@meta
 
 ---@class resty.websocket.protocol
-local protocol = {
-	_VERSION = "0.09",
-}
+---
+---@field _VERSION string
+local protocol = {}
 
 --- websocket object
 --- https://github.com/openresty/lua-resty-websocket

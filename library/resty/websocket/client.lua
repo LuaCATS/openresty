@@ -1,9 +1,9 @@
 ---@meta
 
 ---@class resty.websocket.client : resty.websocket
-local client = {
-	_VERSION = "0.09",
-}
+---
+---@field _VERSION string
+local client = {}
 
 ---Instantiates a WebSocket client object.
 ---
