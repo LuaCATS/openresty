@@ -1,4 +1,10 @@
 ---@meta
+
+-- lua-tablepool
+--
+-- Lua table recycling pools for LuaJIT
+--
+-- https://github.com/openresty/lua-tablepool
 local tablepool = {}
 
 --- Releases the already used Lua table, `tb`, into the table pool named `pool_name`. If the specified table pool does not exist, create it right away.
