@@ -1,8 +1,9 @@
 ---@meta
 
-local shell = {
-	version = 0.03,
-}
+---@class resty.shell
+---
+---@field version number
+local shell = {}
 
 --- Runs a shell command, `cmd`, with an optional stdin.
 ---
