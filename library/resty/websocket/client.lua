@@ -28,10 +28,10 @@ function client:new(opts) end
 ---this method will always look up the connection pool for matched idle
 ---connections created by previous calls of this method.
 ---
----The third return value of this method contains the raw, plain-text response 
+---The third return value of this method contains the raw, plain-text response
 ---(status line and headers) to the handshake request. This allows the caller to
----perform additional validation and/or extract the response headers. When the 
----connection is reused and no handshake request is sent, the string 
+---perform additional validation and/or extract the response headers. When the
+---connection is reused and no handshake request is sent, the string
 ---"connection reused" is returned in lieu of the response.
 ---
 ---@param  uri     string

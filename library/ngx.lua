@@ -2744,7 +2744,6 @@ function udpsock:close() end
 ---@param time number
 function udpsock:settimeout(time) end
 
-
 --- Just like the standard `proxy_bind` directive, this api makes the outgoing connection to a upstream server originate from the specified local IP address.
 ---
 --- Only IP addresses can be specified as the `address` argument.
@@ -2769,7 +2768,6 @@ function udpsock:settimeout(time) end
 ---@return boolean? ok
 ---@return string?  error
 function udpsock:bind(address) end
-
 
 --- Creates and returns a TCP or stream-oriented unix domain socket object (also known as one type of the "cosocket" objects). The following methods are supported on this object:
 ---
@@ -3295,7 +3293,6 @@ function tcpsock:setkeepalive(timeout, size) end
 ---@return number? count
 ---@return string? error
 function tcpsock:getreusedtimes() end
-
 
 --- Just like the standard `proxy_bind` directive, this api makes the outgoing connection to a upstream server originate from the specified local IP address.
 ---
