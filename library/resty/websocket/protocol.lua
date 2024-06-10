@@ -9,7 +9,7 @@ local protocol = {}
 --- https://github.com/openresty/lua-resty-websocket
 ---
 ---@class resty.websocket : table
----@field sock            tcpsock
+---@field sock            ngx.socket.tcp
 ---@field fatal           boolean
 ---@field max_payload_len number
 ---@field send_masked     boolean
@@ -150,19 +150,19 @@ function websocket:recv_frame() end
 function protocol.build_frame(fin, opcode, payload_len, payload, masking) end
 
 --- Sends a raw WebSocket frame.
----@param  sock            tcpsock
+---@param  sock            ngx.socket.tcp
 ---@param  fin             boolean
 ---@param  opcode          resty.websocket.protocol.opcode
 ---@param  payload         string
----@param  max_payload_len interger
+---@param  max_payload_len integer
 ---@param  masking         boolean
----@return bytes?          number
+---@return number?         bytes
 ---@return string?         error
 function protocol.send_frame(sock, fin, opcode, payload, max_payload_len, masking) end
 
 --- Receives a WebSocket frame from the wire.
----@param  sock                           tcpsock
----@param  max_payload_len                interger
+---@param  sock                           ngx.socket.tcp
+---@param  max_payload_len                integer
 ---@param  force_masking                  boolean
 ---@return string?                        data
 ---@return resty.websocket.protocol.type? typ

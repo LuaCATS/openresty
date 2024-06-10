@@ -23,7 +23,7 @@ function client:new(opts) end
 ---this method will always look up the connection pool for matched idle
 ---connections created by previous calls of this method.
 ---
----@param  url     string
+---@param  uri     string
 ---@param  opts?   resty.websocket.client.connect.opts
 ---@return boolean ok
 ---@return string? error
