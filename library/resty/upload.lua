@@ -1,7 +1,30 @@
 ---@meta
-resty_upload = {}
-function resty_upload.read(self) end
-function resty_upload.set_timeout(self, timeout) end
-resty_upload._VERSION = "0.10"
-function resty_upload.new(self, chunk_size, max_line_size) end
-return resty_upload
+
+---@class resty.upload
+---
+---@field _VERSION string
+local upload = {}
+
+---@param chunk_size?    integer  # default: 4096
+---@param max_line_size? integer  # default: 512
+---@param preserve_body? boolean  # default: false
+---
+---@return resty.upload? upload
+---@return string?       error
+function upload:new(chunk_size, max_line_size, preserve_body) end
+
+---@alias resty.upload.chunk_type
+---| "header"
+---| "body"
+---| "part_end"
+---| "eof"
+
+---@return resty.upload.chunk_type? type
+---@return string?                  chunk
+---@return string?                  error
+function upload:read() end
+
+---@param timeout number # milliseconds
+function upload:set_timeout(timeout) end
+
+return upload
