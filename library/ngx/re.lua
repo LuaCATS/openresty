@@ -26,7 +26,7 @@ re.version = require("resty.core.base").version
 ---
 --- The `jit_stack_size` cannot be set to a value lower than PCRE's default of 32K.
 ---
----@param option string '"jit_stack_size"'
+---@param option string|"jit_stack_size"
 ---@param value any
 function re.opt(option, value) end
 

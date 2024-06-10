@@ -53,7 +53,7 @@ local shell = {
 ---@return boolean ok
 ---@return string? stdout
 ---@return string? stderr
----@return string|'"exit"'|'"signal"' reason
+---@return string|"exit"|"signal" reason
 ---@return number? status
 function shell.run(cmd, stdin, timeout, max_size) end
 

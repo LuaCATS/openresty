@@ -133,12 +133,12 @@ function websocket:recv_frame() end
 ---| '0xa' # pong
 
 ---@alias resty.websocket.protocol.type
----| '"continuation"'
----| '"text"'
----| '"binary"'
----| '"close"'
----| '"ping"'
----| '"pong"'
+---| "continuation"
+---| "text"
+---| "binary"
+---| "close"
+---| "ping"
+---| "pong"
 
 --- Builds a raw WebSocket frame.
 ---@param  fin         boolean

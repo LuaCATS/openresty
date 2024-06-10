@@ -149,7 +149,7 @@ function proc:set_timeouts(write_timeout, stdout_read_timeout, stderr_read_timeo
 --- If a thread tries to wait an exited process, the return values will be `nil` and the error string "exited".
 ---
 ---@return boolean             ok
----@return '"exit"'|'"signal"' reason
+---@return "exit"|"signal" reason
 ---@return number              status
 function proc:wait() end
 
@@ -188,7 +188,7 @@ function proc:kill(signum) end
 ---
 ---It is fine to shut down the same direction of the same stream multiple times; no side effects are to be expected.
 ---
----@param direction '"stdin"'|'"stdout"'|'"stderr"'
+---@param direction "stdin"|"stdout"|"stderr"
 ---@return boolean ok
 ---@return string? error
 function proc:shutdown(direction) end
