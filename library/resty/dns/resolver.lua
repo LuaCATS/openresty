@@ -192,7 +192,7 @@ function resolver:new(opts) end
 ---@param qname string
 ---@param opts? resty.dns.resolver.query.opts
 ---@param tries? string[]
----@return resty.dns.resolver.query.answer[] results
+---@return resty.dns.resolver.answer[] results
 ---@return string? error
 ---@return string[]? tries
 function resolver:query(qname, opts, tries) end
@@ -305,19 +305,6 @@ function resolver:query(qname, opts, tries) end
 ---@field expire   integer # SOA expire
 ---@field minimum  integer # SOA minimum
 
----@alias resty.dns.resolver.query.answer
----| resty.dns.resolver.answer
----| resty.dns.resolver.answer.A
----| resty.dns.resolver.answer.AAAA
----| resty.dns.resolver.answer.CNAME
----| resty.dns.resolver.answer.MX
----| resty.dns.resolver.answer.NS
----| resty.dns.resolver.answer.PTR
----| resty.dns.resolver.answer.SOA
----| resty.dns.resolver.answer.SPF
----| resty.dns.resolver.answer.SRV
----| resty.dns.resolver.answer.TXT
-
 --- Options for `resty.dns.resolver:query()`
 ---
 ---@class resty.dns.resolver.query.opts : table
@@ -334,7 +321,7 @@ function resolver:query(qname, opts, tries) end
 ---
 ---@param qname string
 ---@param opts? resty.dns.resolver.query.opts
----@return resty.dns.resolver.query.answer[] results
+---@return resty.dns.resolver.answer[] results
 ---@return string? error
 function resolver:tcp_query(qname, opts) end
 
