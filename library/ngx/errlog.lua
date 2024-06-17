@@ -1,7 +1,9 @@
 ---@meta
-local errlog = {
-	version = require("resty.core.base").version,
-}
+
+---@class ngx.errlog
+---
+---@field version string
+local errlog = {}
 
 --- Return the nginx core's error log filter level (defined via the `error_log` configuration directive in nginx.conf) as an integer value.
 ---@return ngx.log.level

@@ -1,4 +1,8 @@
 ---@meta
-local resty_core_uri = {}
-resty_core_uri.version = require("resty.core.base").version
-return resty_core_uri
+
+---@class resty.core.uri
+---
+---@field version string
+local uri = {}
+
+return uri

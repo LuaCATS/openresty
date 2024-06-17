@@ -1,8 +1,9 @@
 ---@meta
 
-local shell = {
-	version = 0.03,
-}
+---@class resty.shell
+---
+---@field version number
+local shell = {}
 
 --- Runs a shell command, `cmd`, with an optional stdin.
 ---
@@ -53,7 +54,7 @@ local shell = {
 ---@return boolean ok
 ---@return string? stdout
 ---@return string? stderr
----@return string|'"exit"'|'"signal"' reason
+---@return string|"exit"|"signal" reason
 ---@return number? status
 function shell.run(cmd, stdin, timeout, max_size) end
 

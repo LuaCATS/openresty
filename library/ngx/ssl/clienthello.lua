@@ -1,7 +1,9 @@
 ---@meta
-local clienthello = {}
 
-clienthello.version = require("resty.core.base").version
+---@class ngx.ssl.clienthello
+---
+---@field version string
+local clienthello = {}
 
 ---Returns the TLS SNI (Server Name Indication) name set by the client.
 ---
@@ -91,9 +93,23 @@ function clienthello.get_client_hello_ext(ext_type) end
 ---  ssl_clt.set_protocols({"TLSv1.1", "TLSv1.2", "TLSv1.3"})`
 --- ```
 ---
----@param protocols string[]
+---@param protocols ngx.ssl.tls_version.string[]
 ---@return boolean ok
 ---@return string? error
 function clienthello.set_protocols(protocols) end
+
+--- Returns the table of ssl hello supported versions set by the client.
+---
+--- Return `nil` when then the extension does not exist.
+---
+--- In case of errors, it returns `nil` and a string describing the error.
+---
+--- Note that the types is gotten from the raw extensions of the client hello message associated with the current downstream SSL connection.
+---
+--- This function can only be called in the context of `ssl_client_hello_by_lua*`.
+---
+---@return ngx.ssl.tls_version.string[]|nil versions
+---@return string? error
+function clienthello.get_supported_versions() end
 
 return clienthello

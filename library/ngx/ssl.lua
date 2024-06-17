@@ -1,5 +1,35 @@
 ---@meta
+
+---@class ngx.ssl
+---
+---@field version string
+---
+---@field SSL3_VERSION   ngx.ssl.SSL3_VERSION
+---@field TLS1_VERSION   ngx.ssl.TLS1_VERSION
+---@field TLS1_1_VERSION ngx.ssl.TLS1_1_VERSION
+---@field TLS1_2_VERSION ngx.ssl.TLS1_2_VERSION
+---@field TLS1_3_VERSION ngx.ssl.TLS1_3_VERSION
 local ssl = {}
+
+---@alias ngx.ssl.SSL3_VERSION   768
+---@alias ngx.ssl.TLS1_VERSION   769
+---@alias ngx.ssl.TLS1_1_VERSION 770
+---@alias ngx.ssl.TLS1_2_VERSION 771
+---@alias ngx.ssl.TLS1_3_VERSION 772
+
+---@alias ngx.ssl.tls_version.integer
+---| ngx.ssl.SSL3_VERSION
+---| ngx.ssl.TLS1_VERSION
+---| ngx.ssl.TLS1_1_VERSION
+---| ngx.ssl.TLS1_2_VERSION
+---| ngx.ssl.TLS1_3_VERSION
+
+---@alias ngx.ssl.tls_version.string
+---| "SSLv3"
+---| "TLSv1"
+---| "TLSv1.1"
+---| "TLSv1.2"
+---| "TLSv1.3"
 
 --- Sets the DER-formatted prviate key for the current SSL connection.
 ---
@@ -25,22 +55,32 @@ function ssl.set_der_priv_key(der_priv_key) end
 ---@return string? error
 function ssl.parse_pem_priv_key(pem_priv_key) end
 
+--- Converts the DER-formatted SSL private key data into an opaque cdata pointer (for later uses in the `set_priv_key()` function, for example).
+---
+--- In case of failures, returns `nil` and a string describing the error.
+---
+--- This function can be called in any context.
+---@param der_priv_key string
+---@return ffi.cdata*? priv_key
+---@return string? error
+function ssl.parse_der_priv_key(der_priv_key) end
+
 --- Returns the TLS 1.x version number used by the current SSL connection. Returns nil and a string describing the error otherwise.
 ---
 --- Typical return values are:
 ---
----     0x0300(SSLv3)
----     0x0301(TLSv1)
----     0x0302(TLSv1.1)
----     0x0303(TLSv1.2)
----     0x0304(TLSv1.3)
+---     0x0300 (768) SSLv3
+---     0x0301 (769) TLSv1
+---     0x0302 (770) TLSv1.1
+---     0x0303 (771) TLSv1.2
+---     0x0304 (772) TLSv1.3
 ---
 --- This function can be called in any context where downstream https is used.
----@return number? version
+---@return ngx.ssl.tls_version.integer? version
 ---@return string? error
 function ssl.get_tls1_version() end
 
---- Sets the SSL certificate chain opaque pointer returned by the parse_pem_cert function for the current SSL connection.
+--- Sets the SSL certificate chain opaque pointer returned by the `parse_pem_cert()` or `parse_der_cert()` functions for the current SSL connection.
 ---
 --- Returns true on success, or a nil value and a string describing the error otherwise.
 ---
@@ -51,9 +91,7 @@ function ssl.get_tls1_version() end
 ---@return string? error
 function ssl.set_cert(cert_chain) end
 
-ssl.TLS1_VERSION = 769
-
---- Sets the SSL private key opaque pointer returned by the parse_pem_priv_key function for the current SSL connection.
+--- Sets the SSL private key opaque pointer returned by the `parse_pem_priv_key()` or `parse_der_priv_key()` functions for the current SSL connection.
 ---
 --- Returns true on success, or a nil value and a string describing the error otherwise.
 ---
@@ -107,9 +145,9 @@ function ssl.set_priv_key(priv_key) end
 function ssl.raw_server_addr() end
 
 ---@alias ngx.ssl.addr_type
----| '"unix"'  # a file path for the UNIX domain socket.
----| '"inet"'  # a binary IPv4 address of 4 bytes long.
----| '"inet6"' # a binary IPv6 address of 16 bytes long.
+---| "unix"  # a file path for the UNIX domain socket.
+---| "inet"  # a binary IPv4 address of 4 bytes long.
+---| "inet6" # a binary IPv6 address of 16 bytes long.
 
 --- Clears any existing SSL certificates and/or private keys set on the current SSL connection.
 ---
@@ -173,8 +211,17 @@ function ssl.raw_client_addr() end
 ---@return string? error
 function ssl.parse_pem_cert(pem_cert_chain) end
 
-ssl.version = require("resty.core.base").version
-ssl.TLS1_2_VERSION = 771
+--- Converts the DER-formated SSL certificate chain data into an opaque cdata pointer (for later usese in the `set_cert()` function, for example).
+---
+--- In case of failures, returns `nil` and a string describing the error.
+---
+--- You can always use libraries like [lua-resty-lrucache](https://github.com/openresty/lua-resty-lrucache#readme) to cache the cdata result.
+---
+--- This function can be called in any context.
+---@param der_cert_chain string
+---@return ffi.cdata*? cert_chain
+---@return string? error
+function ssl.parse_der_cert(der_cert_chain) end
 
 --- Returns the TLS SNI (Server Name Indication) name set by the client. Returns nil when the client does not set it.
 ---
@@ -200,9 +247,6 @@ function ssl.server_name() end
 ---@return string? error
 function ssl.server_port() end
 
-ssl.TLS1_1_VERSION = 770
-ssl.SSL3_VERSION = 768
-
 --- Sets the DER-formatted SSL certificate chain data for the current SSL connection. Note that the DER data is directly in the Lua string argument. No external file names are supported here.
 ---
 --- Returns true on success, or a nil value and a string describing the error otherwise.
@@ -227,7 +271,7 @@ function ssl.set_der_cert(der_cert_chain) end
 ---
 --- This function can be called in any context where downstream https is used.
 ---
----@return string? version
+---@return ngx.ssl.tls_version.string? version
 ---@return string? error
 function ssl.get_tls1_version_str() end
 
@@ -272,5 +316,97 @@ function ssl.cert_pem_to_der(pem_cert_chain) end
 ---@return boolean ok
 ---@return string? error
 function ssl.verify_client(ca_certs, depth) end
+
+--- Retrieves the OpenSSL `SSL*` object for the current downstream connection.
+---
+--- Returns an FFI pointer on success, or a `nil` value and a string describing the error otherwise.
+---
+--- If you need to retain the pointer beyond the current phase then you will need to use OpenSSL's `SSL_up_ref` to increase the reference count.
+--- If you do, ensure that your reference is released with `SSL_free`.
+---
+--- This function was first added in version `0.1.16`.
+---
+---@return ffi.cdata*? pointer
+---@return string?     error
+function ssl.get_req_ssl_pointer() end
+
+--- Return a key derived from the SSL master secret.
+---
+--- As described in RFC8446 section 7.5 this function returns key material that is derived from the SSL master secret and can be used on the application level. The returned key material is of the given length. Label is mandatory and requires a special format that is described in RFC5705 section 4. Context is optional but note that in TLSv1.2 and below a zero length context is treated differently from no context at all, and will result in different keying material being returned. In TLSv1.3 a zero length context is that same as no context at all and will result in the same keying material being returned.
+---
+--- The following code snippet shows how to derive a new key that can be used on the application level.
+---
+--- ```lua
+--- local ssl = require "ngx.ssl"
+---
+--- local key_length = 16
+--- local label = "EXPERIMENTAL my label"
+--- local context = "\x00\x01\x02\x03"
+---
+--- local key, err = ssl.export_keying_material(key_length, label, context)
+--- if not key then
+---     ngx.log(ngx.ERR, "failed to derive key ", err)
+---     return
+--- end
+---
+--- -- use key...
+---
+--- end
+--- ```
+---
+--- This function can be called in any context where downstream https is used.
+---
+---@param  length   integer
+---@param  label    string
+---@param  context? string
+---@return string?  key
+---@return string?  error
+function ssl.export_keying_material(length, label, context) end
+
+--- Returns a key derived from the SSL early exporter master secret.
+---
+--- As described in RFC8446 section 7.5 this function returns key material that is derived from the SSL early exporter master secret and can be used on the application level. The returned key material is of the given length. Label is mandatory and requires a special format that is described in RFC5705 section 4. This function is only usable with TLSv1.3, and derives keying material using the early_exporter_master_secret (as defined in the TLS 1.3 RFC). For the client, the early_exporter_master_secret is only available when the client attempts to send 0-RTT data. For the server, it is only available when the server accepts 0-RTT data.
+---
+--- The following code snippet shows how to derive a new key that can be used on the application level.
+---
+--- ```lua
+--- local ssl = require "ngx.ssl"
+---
+--- local key_length = 16
+--- local label = "EXPERIMENTAL my label"
+--- local context = "\x00\x01\x02\x03"
+---
+--- local key, err = ssl.export_keying_material_early(key_length, label, context)
+--- if not key then
+---     ngx.log(ngx.ERR, "failed to derive key ", err)
+---     return
+--- end
+---
+--- -- use key...
+---
+--- end
+--- ```
+---
+--- This function can be called in any context where downstream https TLS1.3 is used.
+---
+---@param  length   integer
+---@param  label    string
+---@param  context? string
+---@return string?  key
+---@return string?  error
+function ssl.export_keying_material_early(length, label, context) end
+
+--- Returns the random value sent from the client to the server during the initial SSL/TLS handshake.
+---
+--- The `outlen` parameter indicates the maximum length of the client_random value returned.
+--- If the `outlen` is zero, this function returns the total length of the client_random value.
+--- If omitted, will use the value 32.
+---
+--- This function can be called in any context where downstream https is used, but in the context of [ssl_client_hello_by_lua*](https://github.com/openresty/lua-nginx-module/#ssl_client_hello_by_lua_block), it can not return the real client_random value, just a string filled with 0.
+---
+---@param  outlen?         integer
+---@return string|integer? result
+---@return string?         error
+function ssl.get_client_random(outlen) end
 
 return ssl

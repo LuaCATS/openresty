@@ -567,7 +567,7 @@ function ngx.worker.pid() end
 ---
 --- This string field indicates the current NGINX subsystem the current Lua environment is based on. For this module, this field always takes the string value `"http"`.
 --- For `ngx_stream_lua_module`, however, this field takes the value `"stream"`.
----@field subsystem '"http"'|'"stream"'
+---@field subsystem "http"|"stream"
 ---
 --- This field takes an integral value indicating the version number of the current NGINX core being used. For example, the version number `1.4.3` results in the Lua number 1004003.
 ---@field nginx_version number
@@ -1293,11 +1293,11 @@ function DICT:get(key) end
 function DICT:get_stale(key) end
 
 ---@alias ngx.shared.DICT.error string
----| '"no memory"'        # not enough available memory to store a value
----| '"exists"'           # called add() on an existing value
----| '"not found"'        # called a method (replace/ttl/expire) on an absent value
----| '"not a number"'     # called incr() on a non-number value
----| '"value not a list"' # called list methods (lpush/lpop/rpush/rpop/llen) on a non-list value
+---| "no memory"        # not enough available memory to store a value
+---| "exists"           # called add() on an existing value
+---| "not found"        # called a method (replace/ttl/expire) on an absent value
+---| "not a number"     # called incr() on a non-number value
+---| "value not a list" # called list methods (lpush/lpop/rpush/rpop/llen) on a non-list value
 
 --- Optional user flags associated with a shm value.
 ---
@@ -1687,7 +1687,7 @@ ngx.var.host = nil
 ngx.var.hostname = nil
 
 --- “on” if connection operates in SSL mode, or an empty string otherwise
----@type string '"on"'|'""'
+---@type string "on"|""
 ngx.var.https = nil
 
 --- “?” if a request line has arguments, or an empty string otherwise
@@ -2041,7 +2041,7 @@ function ngx.req.set_body_data(data) end
 ---
 ---@param max_args? number
 ---@return table args
----@return string|'"truncated"' error
+---@return string|"truncated" error
 function ngx.req.get_post_args(max_args) end
 
 --- Returns a Lua table holding all the current request URL query arguments. An optional `tab` argument can be used to reuse the table returned by this method.
@@ -2134,7 +2134,7 @@ function ngx.req.get_post_args(max_args) end
 ---@param max_args? number
 ---@param tab? table
 ---@return table args
----@return string|'"truncated"' error
+---@return string|"truncated" error
 function ngx.req.get_uri_args(max_args, tab) end
 
 --- Rewrite the current request's (parsed) URI by the `uri` argument. The `uri` argument must be a Lua string and cannot be of zero length, or a Lua exception will be thrown.
@@ -2439,7 +2439,7 @@ function ngx.req.clear_header(header_name) end
 ---@param max_headers? number
 ---@param raw? boolean
 ---@return table<string, string|string[]> headers
----@return string|'"truncated"' error
+---@return string|"truncated" error
 function ngx.req.get_headers(max_headers, raw) end
 
 --- Explicitly discard the request body, i.e., read the data on the connection and throw it away immediately (without using the request body by any means).
@@ -2628,7 +2628,7 @@ function ngx.encode_args(args) end
 ---@param  str                  string
 ---@param  max_args?            number
 ---@return table                args
----@return string|'"truncated"' error
+---@return string|"truncated" error
 function ngx.decode_args(str, max_args) end
 
 ngx.socket = {}
@@ -2743,6 +2743,31 @@ function udpsock:close() end
 ---
 ---@param time number
 function udpsock:settimeout(time) end
+
+--- Just like the standard `proxy_bind` directive, this api makes the outgoing connection to a upstream server originate from the specified local IP address.
+---
+--- Only IP addresses can be specified as the `address` argument.
+---
+--- Here is an example for connecting to a TCP server from the specified local IP address:
+---
+--- ```nginx
+---  location /test {
+---      content_by_lua_block {
+---          local sock = ngx.socket.udp()
+---          -- assume "192.168.1.10" is the local ip address
+---          local ok, err = sock:bind("192.168.1.10")
+---          if not ok then
+---              ngx.say("failed to bind: ", err)
+---              return
+---          end
+---          sock:close()
+---      }
+---  }
+--- ```
+---@param  address  string # must be an IP address
+---@return boolean? ok
+---@return string?  error
+function udpsock:bind(address) end
 
 --- Creates and returns a TCP or stream-oriented unix domain socket object (also known as one type of the "cosocket" objects). The following methods are supported on this object:
 ---
@@ -2976,7 +3001,7 @@ function tcpsock:send(data) end
 ---
 ---@overload fun(self:ngx.socket.tcp, size:number):string,string,string
 ---
----@param  pattern? '"*a"'|'"*l"'
+---@param  pattern? "*a"|"*l"
 ---@return string? data
 ---@return string? error
 ---@return string? partial
@@ -3230,11 +3255,11 @@ function tcpsock:settimeouts(connect_timeout, send_timeout, read_timeout) end
 function tcpsock:setoption(option, value) end
 
 ---@alias ngx.socket.tcp.setoption.option
----| '"keepalive"'   # enable or disable keepalive
----| '"reuseaddr"'   # reuse addr options
----| '"tcp-nodelay"' # disables the Nagle's algorithm for the connection.
----| '"sndbuf"'      # max send buffer size (in bytes)
----| '"rcvbuf"'      # max receive bufer size (in bytes)
+---| "keepalive"   # enable or disable keepalive
+---| "reuseaddr"   # reuse addr options
+---| "tcp-nodelay" # disables the Nagle's algorithm for the connection.
+---| "sndbuf"      # max send buffer size (in bytes)
+---| "rcvbuf"      # max receive bufer size (in bytes)
 
 --- Puts the current socket's connection immediately into the cosocket built-in connection pool and keep it alive until other `connect` method calls request it or the associated maximal idle timeout is expired.
 ---
@@ -3268,6 +3293,37 @@ function tcpsock:setkeepalive(timeout, size) end
 ---@return number? count
 ---@return string? error
 function tcpsock:getreusedtimes() end
+
+--- Just like the standard `proxy_bind` directive, this api makes the outgoing connection to a upstream server originate from the specified local IP address.
+---
+--- Only IP addresses can be specified as the address argument.
+---
+--- Here is an example for connecting to a TCP server from the specified local IP address:
+---
+--- ```nginx
+---  location /test {
+---      content_by_lua_block {
+---          local sock = ngx.socket.tcp()
+---          -- assume "192.168.1.10" is the local ip address
+---          local ok, err = sock:bind("192.168.1.10")
+---          if not ok then
+---              ngx.say("failed to bind")
+---              return
+---          end
+---          local ok, err = sock:connect("192.168.1.67", 80)
+---          if not ok then
+---              ngx.say("failed to connect server: ", err)
+---              return
+---          end
+---          ngx.say("successfully connected!")
+---          sock:close()
+---      }
+---  }
+--- ```
+---@param  address  string # must be an IP address
+---@return boolean? ok
+---@return string?  error
+function tcpsock:bind(address) end
 
 --- This function is a shortcut for combining `ngx.socket.tcp()` and the `connect()` method call in a single operation. It is actually implemented like this:
 ---
@@ -3335,20 +3391,20 @@ function ngx.socket.stream() end
 ngx.arg = {}
 
 ---@alias ngx.phase.name
----| '"init"'
----| '"init_worker"'
----| '"ssl_cert"'
----| '"ssl_session_fetch"'
----| '"ssl_session_store"'
----| '"set"'
----| '"rewrite"'
----| '"balancer"'
----| '"access"'
----| '"content"'
----| '"header_filter"'
----| '"body_filter"'
----| '"log"'
----| '"timer"'
+---| "init"
+---| "init_worker"
+---| "ssl_cert"
+---| "ssl_session_fetch"
+---| "ssl_session_store"
+---| "set"
+---| "rewrite"
+---| "balancer"
+---| "access"
+---| "content"
+---| "header_filter"
+---| "body_filter"
+---| "log"
+---| "timer"
 
 --- Retrieves the current running phase name.
 ---
@@ -3514,7 +3570,7 @@ function ngx.redirect(uri, status) end
 ---
 ---@param callback fun()
 ---@return boolean ok
----@return string|'"lua_check_client_abort is off"'|'"duplicate call"' error
+---@return string|"lua_check_client_abort is off"|"duplicate call" error
 function ngx.on_abort(callback) end
 
 --- Does an internal redirect to `uri` with `args` and is similar to the `echo_exec` directive of the `echo-nginx-module`.
@@ -4209,7 +4265,7 @@ ngx.resp = {}
 ---@param max_headers? number
 ---@param raw? boolean
 ---@return table<string, string|string[]>
----@return string|'"truncated"' error
+---@return string|"truncated" error
 function ngx.resp.get_headers(max_headers, raw) end
 
 ---@alias ngx.thread.arg boolean|number|integer|string|lightuserdata|table

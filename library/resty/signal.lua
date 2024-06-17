@@ -1,8 +1,9 @@
 ---@meta
 
-local signal = {
-	version = 0.03,
-}
+---@class resty.signal
+---
+---@field version number
+local signal = {}
 
 ---@alias resty.signal.name
 ---| "NONE"   # SIG_NONE

@@ -1,7 +1,9 @@
 ---@meta
-local balancer = {
-	version = require("resty.core.base").version,
-}
+
+---@class ngx.balancer
+---
+---@field version string
+local balancer = {}
 
 --- Sets the peer address (host and port) for the current backend query (which
 --- may be a retry).
@@ -50,8 +52,8 @@ function balancer.set_current_peer(addr, port) end
 function balancer.set_timeouts(connect_timeout, send_timeout, read_timeout) end
 
 ---@alias ngx.balancer.failure
----| '"next"' # Failures due to bad status codes sent from the backend server. The origin's response is same though, which means the backend connection can still be reused for future requests.
----| '"failed"' Fatal errors while communicating to the backend server (like connection timeouts, connection resets, and etc). In this case, the backend connection must be aborted and cannot get reused.
+---| "next" # Failures due to bad status codes sent from the backend server. The origin's response is same though, which means the backend connection can still be reused for future requests.
+---| "failed" # Fatal errors while communicating to the backend server (like connection timeouts, connection resets, and etc). In this case, the backend connection must be aborted and cannot get reused.
 
 --- Retrieves the failure details about the previous failed attempt (if any) when
 --- the next_upstream retrying mechanism is in action. When there was indeed a
@@ -113,5 +115,17 @@ function balancer.set_more_tries(count) end
 ---@return boolean ok
 ---@return string? error
 function balancer.recreate_request() end
+
+--- Turn off the HTTPs or reenable the HTTPs for the upstream connection.
+---
+--- - If `on` is `true`, then the https protocol will be used to connect to the upstream server.
+--- - If `on` is `false`, then the http protocol will be used to connect to the upstream server.
+---
+--- This function was first added in the `0.1.29` version of this library.
+---
+---@param on boolean
+---@return boolean? ok
+---@return string? error
+function balancer.set_upstream_tls(on) end
 
 return balancer

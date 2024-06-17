@@ -1,7 +1,9 @@
 ---@meta
-local process = {
-	version = require("resty.core.base").version,
-}
+
+---@class ngx.process
+---
+---@field version string
+local process = {}
 
 --- Returns a number value for the nginx master process's process ID (or PID).
 ---
@@ -26,11 +28,11 @@ function process.get_master_pid() end
 function process.enable_privileged_agent(connections) end
 
 ---@alias ngx.process.type
----| '"master"'           # the NGINX master process
----| '"worker"'           # an NGINX worker process
----| '"privileged agent"' # the NGINX privileged agent process
----| '"single"'           # returned when Nginx is running in the single process mode
----| '"signaller"'        # returned when Nginx is running as a signaller process
+---| "master"           # the NGINX master process
+---| "worker"           # an NGINX worker process
+---| "privileged agent" # the NGINX privileged agent process
+---| "single"           # returned when Nginx is running in the single process mode
+---| "signaller"        # returned when Nginx is running as a signaller process
 
 --- Returns the type of the current NGINX process.
 ---

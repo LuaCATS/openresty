@@ -1,18 +1,18 @@
 ---@meta
 
 ---@class resty.websocket.protocol
-local protocol = {
-	_VERSION = "0.09",
-}
+---
+---@field _VERSION string
+local protocol = {}
 
---- websocket object
+--- WebSocket object
 --- https://github.com/openresty/lua-resty-websocket
 ---
 ---@class resty.websocket : table
----@field sock            tcpsock
+---@field sock            ngx.socket.tcp
 ---@field fatal           boolean
----@field max_payload_len number
----@field send_masked     boolean
+---@field max_send_len    number
+---@field max_recv_len    number
 local websocket = {}
 
 ---@param ms integer sets the timeout delay (in milliseconds) for the network-related operations
@@ -84,7 +84,7 @@ function websocket:send_close(code, msg) end
 ---
 ---In case of errors, returns nil and a string describing the error.
 ---
----To control the maximal payload length allowed, you can pass the max_payload_len option to the new constructor.
+---To control the maximal payload length allowed, you can pass the `max_send_len` or `max_payload_len` option to the `new` constructor.
 ---
 ---To control whether to send masked frames, you can pass true to the send_masked option in the new constructor method. By default, unmasked frames are sent.
 ---@param  fin      boolean
@@ -97,6 +97,8 @@ function websocket:send_frame(fin, opcode, payload) end
 ---Receives a WebSocket frame from the wire.
 ---
 ---In case of an error, returns two nil values and a string describing the error.
+---
+---To control the maximal payload length allowed, you can pass the `max_recv_len` or `max_payload_len` option to the `new` constructor.
 ---
 ---The second return value is always the frame type, which could be one of continuation, text, binary, close, ping, pong, or nil (for unknown types).
 ---
@@ -114,11 +116,12 @@ function websocket:send_frame(fin, opcode, payload) end
 function websocket:recv_frame() end
 
 ---@class resty.websocket.new.opts : table
----@field max_payload_len  integer  maximal length of payload allowed when sending and receiving WebSocket frames
----@field send_masked      boolean  whether to send out masked WebSocket frames
----@field timeout          integer  network timeout threshold in milliseconds
+---@field max_payload_len?  integer  maximal length of payload allowed when sending and receiving WebSocket frames
+---@field max_recv_len?     integer  maximal length of payload allowed when receiving WebSocket frames. Defaults to the value of `max_payload_len`.
+---@field max_send_len?     integer  maximal length of payload allowed when sending WebSocket frames. Defaults to the value of `max_payload_len`.
+---@field timeout?          integer  network timeout threshold in milliseconds
 
---- Websocket op code
+--- WebSocket op code
 ---
 --- Defines the interpretation of the payload data.
 ---
@@ -133,12 +136,12 @@ function websocket:recv_frame() end
 ---| '0xa' # pong
 
 ---@alias resty.websocket.protocol.type
----| '"continuation"'
----| '"text"'
----| '"binary"'
----| '"close"'
----| '"ping"'
----| '"pong"'
+---| "continuation"
+---| "text"
+---| "binary"
+---| "close"
+---| "ping"
+---| "pong"
 
 --- Builds a raw WebSocket frame.
 ---@param  fin         boolean
@@ -150,19 +153,19 @@ function websocket:recv_frame() end
 function protocol.build_frame(fin, opcode, payload_len, payload, masking) end
 
 --- Sends a raw WebSocket frame.
----@param  sock            tcpsock
+---@param  sock            ngx.socket.tcp
 ---@param  fin             boolean
 ---@param  opcode          resty.websocket.protocol.opcode
 ---@param  payload         string
----@param  max_payload_len interger
+---@param  max_payload_len integer
 ---@param  masking         boolean
----@return bytes?          number
+---@return number?         bytes
 ---@return string?         error
 function protocol.send_frame(sock, fin, opcode, payload, max_payload_len, masking) end
 
 --- Receives a WebSocket frame from the wire.
----@param  sock                           tcpsock
----@param  max_payload_len                interger
+---@param  sock                           ngx.socket.tcp
+---@param  max_payload_len                integer
 ---@param  force_masking                  boolean
 ---@return string?                        data
 ---@return resty.websocket.protocol.type? typ

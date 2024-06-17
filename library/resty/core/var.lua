@@ -1,4 +1,8 @@
 ---@meta
-local resty_core_var = {}
-resty_core_var.version = require("resty.core.base").version
-return resty_core_var
+
+---@class resty.core.var
+---
+---@field version string
+local var = {}
+
+return var
