@@ -765,10 +765,14 @@ function ngx.timer.at(delay, callback, ...) end
 function ngx.unescape_uri(str) end
 
 --- Escape `str` as a URI component.
+--- This function accepts an optional type argument. It accepts the following values (defaults to 2):
+--- 0: escapes str as a full URI. And the characters (space), #, %, ?, 0x00 ~ 0x1F, 0x7F ~ 0xFF will be escaped.
+--- 2: escape str as a URI component. All characters except alphabetic characters, digits, -, ., _, ~ will be encoded as %XX.
 ---
 ---@param str string
+---@param type? integer
 ---@return string
-function ngx.escape_uri(str) end
+function ngx.escape_uri(str, type) end
 
 --- Returns the binary form of the SHA-1 digest of the `str` argument.
 ---
